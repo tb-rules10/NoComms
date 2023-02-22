@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
 import Logout from "./Logout";
-import Video from "./Video";
 import { v4 as uuidv4 } from "uuid";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
 
