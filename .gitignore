@@ -2,5 +2,3 @@
 /public/node_modules
 /server/node_modules
 /server/connectionString.txt
-/server/.env
-server/.env
