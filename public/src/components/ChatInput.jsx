@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useRef} from "react";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
+import { FiShare } from "react-icons/fi";
+import { BsChatLeftDots } from "react-icons/bs";
 import styled from "styled-components";
 import Picker from "emoji-picker-react";
 
-export default function ChatInput({ handleSendMsg }) {
+export default function ChatInput({ handleSendMsg, handleSendFile }) {
   const [msg, setMsg] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  // const [showSharePanel, setShowSharePanel] = useState(true);
+  const fileInputField = useRef(null);
+  const fileInputSubmit = useRef(null);
+  const [files, setFile] = useState();
+
   const handleEmojiPickerhideShow = () => {
     setShowEmojiPicker(!showEmojiPicker);
   };
+  
+  // const handleSharePanelhideShow = () => {
+  //   setShowSharePanel(!showSharePanel);
+  //   handleFileTransfer(showSharePanel);
+  // };
 
   const handleEmojiClick = (event, emojiObject) => {
     let message = msg;
@@ -19,9 +31,26 @@ export default function ChatInput({ handleSendMsg }) {
 
   const sendChat = (event) => {
     event.preventDefault();
-    if (msg.length > 0) {
+    if (files.length > 0) {
       handleSendMsg(msg);
       setMsg("");
+    }
+  };
+
+  const handleFileSelect = (event) => {
+    fileInputField.current.click();
+  };
+
+  const handleFileChange = async (event) => {
+    await setFile(Array.from(event.target.files));
+    fileInputSubmit.current.click();
+  };
+
+  const sendFile = (event) => {
+    event.preventDefault();
+    if (files.length > 0) {
+      handleSendFile(files);
+      setFile([]);
     }
   };
 
@@ -33,11 +62,23 @@ export default function ChatInput({ handleSendMsg }) {
           {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
         </div>
       </div>
+      <div className="share">
+        {/* { showSharePanel ?
+          (< FiShare onClick={handleSharePanelhideShow} />) :
+          (< BsChatLeftDots className="chatIcon" onClick={handleSharePanelhideShow} />) 
+        } */}
+        <FiShare onClick={handleFileSelect}/>
+        <form onSubmit={sendFile}>
+          <input type="file" id="inputfile" multiple="multiple" onChange={handleFileChange} ref={fileInputField} />
+          <button type="submit"  ref={fileInputSubmit}>Submit</button>
+        </form>
+      </div>
+
       <form className="input-container" onSubmit={(event) => sendChat(event)}>
         <input
           type="text"
           placeholder="Type your message here"
-          onChange={(e) => setMsg(e.target.value)}
+          onChange={(e) => {setMsg(e.target.value)}}
           value={msg}
         />
         <button type="submit">
@@ -52,12 +93,32 @@ export default function ChatInput({ handleSendMsg }) {
 const Container = styled.div`
   display: grid;
   align-items: center;
-  grid-template-columns: 5% 95%;
+  grid-template-columns: 6% 6% 88%;
   background-color: #080420;
   padding: 0 2rem;
   @media screen and (min-width: 720px) and (max-width: 1080px) {
     padding: 0 1rem;
     gap: 1rem;
+  }
+  .share {
+    form #inputfile, button{
+      display: none;
+    }
+    .chatIcon{
+      font-size: 1.2rem;
+      margin-top: 0.3rem;
+    }
+    svg {
+      font-size: 1.5rem;
+      color: grey;
+      cursor: pointer;
+    }
+    svg:hover { 
+      color: #ffff00c8; 
+    }
+    svg:active { 
+      color: #ffff00c8; 
+    }
   }
   .button-container {
     display: flex;

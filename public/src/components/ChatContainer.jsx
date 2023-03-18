@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
+import FileTransfer from "./FileTransfer";
 import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
 import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
@@ -10,7 +11,7 @@ export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);
-
+  const [showSharePanel, setShowSharePanel] = useState(false);
 
   useEffect(() => {
     async function setData() {
@@ -37,6 +38,23 @@ export default function ChatContainer({ currentChat, socket }) {
     getCurrentChat();
   }, [currentChat]);
 
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on("msg-recieve", (msg) => {
+        setArrivalMessage({ fromSelf: false, message: msg });
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  
   const handleSendMsg = async (msg) => {
     const data = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
@@ -57,21 +75,15 @@ export default function ChatContainer({ currentChat, socket }) {
     setMessages(msgs);
   };
 
-  useEffect(() => {
-    if (socket.current) {
-      socket.current.on("msg-recieve", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
-      });
-    }
-  }, []);
+  // const handleFileTransfer = (showSharePanel) => {
+  //   setShowSharePanel(showSharePanel);
+  // };
 
-  useEffect(() => {
-    arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
-  }, [arrivalMessage]);
-
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  const handleSendFile = async (files) => {
+    console.log(files);
+    const data = await JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY));
+    
+  };
 
   return (
     <Container>
@@ -97,22 +109,26 @@ export default function ChatContainer({ currentChat, socket }) {
           <Logout />
         </div>
       </div>
-      <div className="chat-messages">
-        {messages.map((message) => {
-          return (
-            <div ref={scrollRef} key={uuidv4()}>
-              <div className={`message ${message.fromSelf ? "sended" : "recieved"}`} >
-                <div className="content ">
-                  <p>
-                    {message.message}
-                  </p>
-                </div>
-              </div>
+      {showSharePanel ? (
+                <FileTransfer />
+            ) : (
+              <div className="chat-messages">
+              {messages.map((message) => {
+                return (
+                  <div ref={scrollRef} key={uuidv4()}>
+                    <div className={`message ${message.fromSelf ? "sended" : "recieved"}`} >
+                      <div className="content ">
+                        <p>
+                          {message.message}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
-      <ChatInput handleSendMsg={handleSendMsg} />
+            )}
+      <ChatInput handleSendMsg={handleSendMsg} handleSendFile={handleSendFile} />
     </Container>
   );
 }
@@ -135,6 +151,8 @@ const Container = styled.div`
     .user-details {
       display: flex;
       align-items: center;
+      justify-content: center;
+      margin-top: 0.3rem;
       gap: 1rem;
       .avatar {
         img {
