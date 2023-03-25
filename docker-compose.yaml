@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+
+  server:
+    build: ./server
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./server:/app/server
+      - /app/server/node_modules
+      
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
+    depends_on:
+      - server
