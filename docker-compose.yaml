@@ -19,3 +19,4 @@ services:
       - /app/frontend/node_modules
     depends_on:
       - server
+      
