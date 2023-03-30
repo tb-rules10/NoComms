@@ -12,7 +12,7 @@ export default function ChatInput({ handleSendMsg, handleSendFile }) {
   // const [showSharePanel, setShowSharePanel] = useState(true);
   const fileInputField = useRef(null);
   const fileInputSubmit = useRef(null);
-  const [files, setFile] = useState();
+  const [files, setFile] = useState(null);
 
   const handleEmojiPickerhideShow = () => {
     setShowEmojiPicker(!showEmojiPicker);
@@ -69,7 +69,7 @@ export default function ChatInput({ handleSendMsg, handleSendFile }) {
         } */}
         <FiShare onClick={handleFileSelect}/>
         <form onSubmit={sendFile}>
-          <input type="file" id="inputfile" multiple="multiple" onChange={handleFileChange} ref={fileInputField} />
+          <input type="file" id="inputfile" onChange={handleFileChange} ref={fileInputField} />
           <button type="submit"  ref={fileInputSubmit}>Submit</button>
         </form>
       </div>

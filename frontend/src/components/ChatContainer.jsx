@@ -5,13 +5,22 @@ import ChatInput from "./ChatInput";
 import FileTransfer from "./FileTransfer";
 import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
-import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
+import {ToastContainer, toast} from 'react-toastify';
+import { sendMessageRoute, recieveMessageRoute, uploadFileRoute, downloadLinkRoute } from "../utils/APIRoutes";
 
 export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef();
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [showSharePanel, setShowSharePanel] = useState(false);
+  const toastOptions = {
+    position: "bottom-right",
+    autoClose: 3000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "light",
+    // theme: "dark",
+  };
 
   useEffect(() => {
     async function setData() {
@@ -80,12 +89,30 @@ export default function ChatContainer({ currentChat, socket }) {
   // };
 
   const handleSendFile = async (files) => {
-    console.log(files);
-    const data = await JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY));
-    
-  };
+    for(let file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('title',file.name);
+      try{
+        const response = await axios.post(uploadFileRoute, formData, {
+          headers: {'Content-Type': 'multipart/form-data'}
+        });
+        console.log(response.data);
+        console.log(`${downloadLinkRoute}/${response.data.id}`)
+        // const downloadLink = axios.get(`${downloadLinkRoute}/${response.data.id}`);
+        // console.log(downloadLink);
+      }
+      catch(err){
+        toast.error(
+          "File size cannot exceed 10 MB",
+          toastOptions
+        );
+      }
+    };
+  }
 
   return (
+    <>
     <Container>
       <div className="chat-header">
         <div className="user-details">
@@ -130,6 +157,8 @@ export default function ChatContainer({ currentChat, socket }) {
             )}
       <ChatInput handleSendMsg={handleSendMsg} handleSendFile={handleSendFile} />
     </Container>
+    <ToastContainer />
+    </>
   );
 }
 
