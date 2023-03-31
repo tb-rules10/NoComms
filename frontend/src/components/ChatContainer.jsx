@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
 import FileTransfer from "./FileTransfer";
+import { MdFileDownload } from "react-icons/md";
 import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
 import {ToastContainer, toast} from 'react-toastify';
@@ -64,7 +65,7 @@ export default function ChatContainer({ currentChat, socket }) {
   }, [messages]);
 
   
-  const handleSendMsg = async (msg) => {
+  const handleSendMsg = async (msg , isFile=false, title=null ) => {
     const data = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
     );
@@ -80,7 +81,7 @@ export default function ChatContainer({ currentChat, socket }) {
     });
 
     const msgs = [...messages];
-    msgs.push({ fromSelf: true, message: msg });
+    msgs.push({ fromSelf: true, isFile: isFile, title: title, message: msg });
     setMessages(msgs);
   };
 
@@ -91,15 +92,19 @@ export default function ChatContainer({ currentChat, socket }) {
   const handleSendFile = async (files) => {
     for(let file of files) {
       const formData = new FormData();
+      var title = file.name;
       formData.append('file', file);
-      formData.append('title',file.name);
+      formData.append('title', title);
       try{
         const response = await axios.post(uploadFileRoute, formData, {
           headers: {'Content-Type': 'multipart/form-data'}
         });
-        console.log(response.data);
+        // console.log(response.data);
         console.log(`${downloadLinkRoute}/${response.data.id}`)
-        // const downloadLink = axios.get(`${downloadLinkRoute}/${response.data.id}`);
+        const downloadLink =`${downloadLinkRoute}/${response.data.id}`;
+        // var template = `Send your a file :- ${title.link(downloadLink)}`;
+        handleSendMsg(downloadLink, true, title);
+
         // console.log(downloadLink);
       }
       catch(err){
@@ -145,9 +150,22 @@ export default function ChatContainer({ currentChat, socket }) {
                   <div ref={scrollRef} key={uuidv4()}>
                     <div className={`message ${message.fromSelf ? "sended" : "recieved"}`} >
                       <div className="content ">
-                        <p>
-                          {message.message}
-                        </p>
+                        {message.isFile ? (
+                          <p>
+                            Sent you a file :-
+                              <a href= {message.message} >
+                                <div className="download">
+                                  <p>{message.title}</p>
+                                  <p>&nbsp;</p>
+                                  <MdFileDownload/>
+                                </div>
+                              </a>
+                          </p>
+                          ) : (
+                          <p>
+                            {message.message}
+                          </p> )
+                        }
                       </div>
                     </div>
                   </div>
@@ -213,7 +231,7 @@ const Container = styled.div`
       display: flex;
       align-items: center;
       .content {
-        max-width: 40%;
+        max-width: 48%;
         overflow-wrap: break-word;
         padding: 1rem;
         font-size: 1.1rem;
@@ -221,6 +239,27 @@ const Container = styled.div`
         color: #d1d1d1;
         @media screen and (min-width: 720px) and (max-width: 1080px) {
           max-width: 70%;
+        }
+        a{
+          text-decoration: none;
+
+          .download{
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #3B374E;
+            padding: 0.3rem;
+            border-radius: 30;
+            p{
+              color: white;
+            }
+            svg {
+              font-size: 1.5rem;
+              color: white;
+            }
+          }
         }
       }
     }

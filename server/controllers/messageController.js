@@ -62,7 +62,8 @@ module.exports.uploadFile = async (req, res, next) => {
 
 module.exports.downloadFile = async (req, res, next) => {
   const file = await File.findOne( { uuid : req.params.id } );
-  // console.log(file);
-
-  res.send("Hello")
+  var path = file.file_path;
+  console.log(path);
+  res.download(path);
+  // res.send("Hello")
 };
