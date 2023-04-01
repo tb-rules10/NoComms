@@ -50,8 +50,13 @@ export default function ChatContainer({ currentChat, socket }) {
 
   useEffect(() => {
     if (socket.current) {
-      socket.current.on("msg-recieve", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
+      socket.current.on("msg-recieve", (data) => {
+        setArrivalMessage({ 
+          fromSelf: false, 
+          isFile: data.msg.startsWith('http://localhost:5000/api/messages/download/') ? true : false, 
+          title: data.title, 
+          message: data.msg 
+        });
       });
     }
   }, []);
@@ -73,21 +78,19 @@ export default function ChatContainer({ currentChat, socket }) {
       to: currentChat._id,
       from: data._id,
       msg,
+      title,
     });
     await axios.post(sendMessageRoute, {
       from: data._id,
       to: currentChat._id,
       message: msg,
+      title: title,
     });
 
     const msgs = [...messages];
-    msgs.push({ fromSelf: true, isFile: isFile, title: title, message: msg });
+    msgs.push({ fromSelf: true, isFile: isFile, title:title, message: msg });
     setMessages(msgs);
   };
-
-  // const handleFileTransfer = (showSharePanel) => {
-  //   setShowSharePanel(showSharePanel);
-  // };
 
   const handleSendFile = async (files) => {
     for(let file of files) {
@@ -99,13 +102,9 @@ export default function ChatContainer({ currentChat, socket }) {
         const response = await axios.post(uploadFileRoute, formData, {
           headers: {'Content-Type': 'multipart/form-data'}
         });
-        // console.log(response.data);
         console.log(`${downloadLinkRoute}/${response.data.id}`)
         const downloadLink =`${downloadLinkRoute}/${response.data.id}`;
-        // var template = `Send your a file :- ${title.link(downloadLink)}`;
         handleSendMsg(downloadLink, true, title);
-
-        // console.log(downloadLink);
       }
       catch(err){
         toast.error(

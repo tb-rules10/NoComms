@@ -15,6 +15,8 @@ module.exports.getMessages = async (req, res, next) => {
     const projectedMessages = messages.map((msg) => {
       return {
         fromSelf: msg.sender.toString() === from,
+        isFile: msg.message.text.startsWith('http://localhost:5000/api/messages/download/') ? true : false ,
+        title: msg.message.title,
         message: msg.message.text,
       };
     });
@@ -26,13 +28,15 @@ module.exports.getMessages = async (req, res, next) => {
 
 module.exports.addMessage = async (req, res, next) => {
   try {
-    const { from, to, message } = req.body;
+    const { from, to, message, title } = req.body;
     const data = await Messages.create({
-      message: { text: message },
+      message: { 
+        text: message,
+        title: title,
+       },
       users: [from, to],
       sender: from,
     });
-
     if (data) return res.json({ msg: "Message added successfully." });
     else return res.json({ msg: "Failed to add message to the database" });
   } catch (ex) {
@@ -63,7 +67,6 @@ module.exports.uploadFile = async (req, res, next) => {
 module.exports.downloadFile = async (req, res, next) => {
   const file = await File.findOne( { uuid : req.params.id } );
   var path = file.file_path;
-  console.log(path);
+  // console.log(path);
   res.download(path);
-  // res.send("Hello")
 };
