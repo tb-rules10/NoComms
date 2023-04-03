@@ -150,20 +150,17 @@ export default function ChatContainer({ currentChat, socket }) {
                     <div className={`message ${message.fromSelf ? "sended" : "recieved"}`} >
                       <div className="content ">
                         {message.isFile ? (
-                          <p>
-                            Sent you a file :-
-                              <a href= {message.message} >
-                                <div className="download">
-                                  <p>{message.title}</p>
-                                  <p>&nbsp;</p>
-                                  <MdFileDownload/>
-                                </div>
-                              </a>
-                          </p>
+                            <a href= {message.message} >
+                              <div className="download">
+                                <p>{message.title}</p>
+                                <p>&nbsp;</p>
+                                <MdFileDownload/>
+                              </div>
+                          </a>
                           ) : (
-                          <p>
-                            {message.message}
-                          </p> )
+                            <p>
+                              {message.message}
+                            </p> )
                         }
                       </div>
                     </div>

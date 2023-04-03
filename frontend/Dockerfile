@@ -9,4 +9,4 @@ RUN npm install
 EXPOSE 3000
 
 # CMD [ "ls" ]
-CMD [ "yarn", "run" ]
+CMD [ "yarn", "run", "start-dock" ]

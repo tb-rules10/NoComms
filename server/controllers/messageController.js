@@ -48,7 +48,7 @@ module.exports.uploadFile = async (req, res, next) => {
   try {
     const { title } = req.body;
     const { path, mimetype } = req.file;
-    console.log(path);
+    // console.log(path);
     const fileData = fs.readFileSync(path);
     var id = short.generate()
     const file = await File.create({
