@@ -46,7 +46,11 @@ module.exports.addMessage = async (req, res, next) => {
 
 module.exports.uploadFile = async (req, res, next) => {
   try {
+
+    console.log("****************");
+    console.log(path);
     const { title } = req.body;
+    console.log(path);
     const { path, mimetype } = req.file;
     console.log(path);
     const fileData = fs.readFileSync(path);
