@@ -1,4 +1,6 @@
-export const host = "http://localhost:5000";
+const hostIP = "10.7.1.245";
+
+export const host = `http://${hostIP}:5000`;
 
 export const registerRoute = `${host}/api/auth/register`
 

@@ -1,6 +1,5 @@
 const Messages = require("../models/messageModel");
 const File = require("../models/fileModel");
-const fs = require('fs');
 const short = require('short-uuid');
 
 module.exports.getMessages = async (req, res, next) => {
@@ -15,7 +14,7 @@ module.exports.getMessages = async (req, res, next) => {
     const projectedMessages = messages.map((msg) => {
       return {
         fromSelf: msg.sender.toString() === from,
-        isFile: msg.message.text.startsWith('http://localhost:5000/api/messages/download/') ? true : false ,
+        isFile: msg.message.text.includes("/api/messages/download/") ? true : false ,
         title: msg.message.title,
         message: msg.message.text,
       };
@@ -67,6 +66,6 @@ module.exports.uploadFile = async (req, res, next) => {
 module.exports.downloadFile = async (req, res, next) => {
   const file = await File.findOne( { uuid : req.params.id } );
   var path = file.file_path;
-  // console.log(path);
+  console.log(path);
   res.download(path);
 };

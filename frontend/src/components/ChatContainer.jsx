@@ -7,7 +7,7 @@ import { MdFileDownload } from "react-icons/md";
 import Logout from "./Logout";
 import { v4 as uuidv4 } from "uuid";
 import {ToastContainer, toast} from 'react-toastify';
-import { sendMessageRoute, recieveMessageRoute, uploadFileRoute, downloadLinkRoute } from "../utils/APIRoutes";
+import { host, sendMessageRoute, recieveMessageRoute, uploadFileRoute, downloadLinkRoute } from "../utils/APIRoutes";
 
 export default function ChatContainer({ currentChat, socket }) {
   const [messages, setMessages] = useState([]);
@@ -51,9 +51,10 @@ export default function ChatContainer({ currentChat, socket }) {
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg-recieve", (data) => {
+        // console.log(data);
         setArrivalMessage({ 
           fromSelf: false, 
-          isFile: data.msg.startsWith('http://localhost:5000/api/messages/download/') ? true : false, 
+          isFile: data.msg.includes("/api/messages/download/") ? true : false, 
           title: data.title, 
           message: data.msg 
         });
@@ -102,7 +103,7 @@ export default function ChatContainer({ currentChat, socket }) {
         const response = await axios.post(uploadFileRoute, formData, {
           headers: {'Content-Type': 'multipart/form-data'}
         });
-        console.log(`${downloadLinkRoute}/${response.data.id}`)
+        // console.log(`${downloadLinkRoute}/${response.data.id}`)
         const downloadLink =`${downloadLinkRoute}/${response.data.id}`;
         handleSendMsg(downloadLink, true, title);
       }
