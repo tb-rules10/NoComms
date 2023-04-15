@@ -1,6 +1,7 @@
 const Messages = require("../models/messageModel");
 const File = require("../models/fileModel");
 const short = require('short-uuid');
+const fs = require('fs');
 
 module.exports.getMessages = async (req, res, next) => {
   try {
@@ -47,7 +48,7 @@ module.exports.uploadFile = async (req, res, next) => {
   try {
     const { title } = req.body;
     const { path, mimetype } = req.file;
-    // console.log(path);
+    console.log(path);
     const fileData = fs.readFileSync(path);
     var id = short.generate()
     const file = await File.create({
@@ -59,6 +60,7 @@ module.exports.uploadFile = async (req, res, next) => {
     });
     res.send({ id:  id });
   } catch (error) {
+    console.log(error);
     res.status(400).send('Error while uploading file. Try again later.');
   }
 };
@@ -66,6 +68,6 @@ module.exports.uploadFile = async (req, res, next) => {
 module.exports.downloadFile = async (req, res, next) => {
   const file = await File.findOne( { uuid : req.params.id } );
   var path = file.file_path;
-  console.log(path);
+  // console.log(path);
   res.download(path);
 };

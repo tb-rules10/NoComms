@@ -1,6 +1,4 @@
-const hostIP = "10.7.1.245";
-
-export const host = `http://${hostIP}:5000`;
+export const host = `${process.env.REACT_APP_BASE_URL}`;
 
 export const registerRoute = `${host}/api/auth/register`
 
