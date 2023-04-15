@@ -46,13 +46,8 @@ module.exports.addMessage = async (req, res, next) => {
 
 module.exports.uploadFile = async (req, res, next) => {
   try {
-
-    console.log("****************");
-    console.log(path);
     const { title } = req.body;
-    console.log(path);
     const { path, mimetype } = req.file;
-    console.log(path);
     const fileData = fs.readFileSync(path);
     var id = short.generate()
     const file = await File.create({
@@ -72,6 +67,5 @@ module.exports.uploadFile = async (req, res, next) => {
 module.exports.downloadFile = async (req, res, next) => {
   const file = await File.findOne( { uuid : req.params.id } );
   var path = file.file_path;
-  // console.log(path);
   res.download(path);
 };
