@@ -20,6 +20,7 @@ module.exports.register = async (req, res, next) => {
       email,
       password: hashedPassword
     });
+    console.log(`---> User Registered - ${username}`);
     delete user.password;
     return res.json({ status: true, user });
   }
@@ -79,8 +80,10 @@ module.exports.allUsers = async (req, res, next) => {
   }
 };
 
-module.exports.logout = (req, res, next) => {
+module.exports.logout = async (req, res, next) => {
   try {
+    const username = req.params.id;
+    console.log(`---> User Logout - ${username}`);
     return res.status(200).send();
   } catch (ex) {
     next(ex);

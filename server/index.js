@@ -19,6 +19,7 @@ mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
 }).then(() => {
     console.log("Connected to DB");
+    console.log("-----------------------------------------------");
 }).catch((err) => {
     console.log(err.message);
 });
@@ -39,7 +40,8 @@ global.onlineUsers = new Map();
 
 io.on("connection", (socket) => {
     global.chatSocket = socket;
-    socket.on("add-user", (userId) => {
+    socket.on("add-user", (userId, username) => {
+        console.log(`---> User Login - ${username}`);
         onlineUsers.set(userId, socket.id);
     });
     socket.on("send-msg", (data) => {
@@ -52,4 +54,3 @@ io.on("connection", (socket) => {
         }
     });
 });
-
