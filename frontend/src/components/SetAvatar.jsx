@@ -59,16 +59,17 @@ export default function SetAvatar() {
         async function getAvatars() {
             const data = [];
             for (let i = 0; i < 4; ) {
-                // try{
-                    console.log(`${api}/${Math.round(Math.random() * 1000)}`);
+                try{
+                    console.log(`Avatars fetched - ${i}`)
                     const image = await axios.get(`${api}/${Math.round(Math.random() * 1000)}`);
                     const buffer = new Buffer(image.data);
                     data.push(buffer.toString("base64"));
                     i++;
-                // }
-                // catch(err){
-                //     continue;
-                // }
+                }
+                catch(err){
+                    console.log(err);
+                    continue;
+                }
             }
             setAvatars(data);
             console.log(data);
