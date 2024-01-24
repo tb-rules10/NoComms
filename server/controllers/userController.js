@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
 module.exports.home = (req, res, next) => {
+  console.log("---> Server Home");
   res.send("Server HOME");
 };
 
